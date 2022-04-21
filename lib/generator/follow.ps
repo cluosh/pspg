@@ -1,0 +1,91 @@
+/FOLLOW_initN {                              % (dict) => ~
+    dup begin grammar {                      % Create FOLLOW for nonterminals
+        pop << >> def
+    } forall end pop
+} def
+
+/FOLLOW_start {                              % (dict) (name) => ~
+    get /$ {} put
+} def
+
+/FOLLOW_case1 {                              % (array) => (name)? (flag)
+    dup length 1 sub get                     % A -> aN or A -> N
+    dup grammar exch known dup not {
+        exch pop
+    } if
+} def
+
+/FOLLOW_case2 {                              % (dict_f) (dict_A) (array) => ~
+    dup length 2 ge {
+        dup length 2 sub -1 0 {
+            dup 2 index exch get
+            dup grammar exch known {
+                exch 2 index exch inc get
+                4 index exch get exch load
+                2 copy exch FOLLOW_addSet    % First(b) to Follow(N)
+                exch /EPSILON known {
+                    2 index FOLLOW_addSet    % Follow(A) to Follow(N)
+                }{
+                    pop
+                } ifelse
+            }{
+                pop pop
+            } ifelse
+        } for
+    } if
+
+    pop pop pop
+} def
+
+/FOLLOW_addSet {                             % (dict_N) (dict_A) => ~
+    {                                        % Add all terminals from dict A
+        tokens 2 index known {               % to dict N
+            2 index 3 1 roll put
+        }{
+            pop pop
+        } ifelse
+    } forall pop
+} def
+
+/FOLLOW_size {                               % (dict) => (num)
+    0 exch { exch pop length add } forall
+} def
+
+/FOLLOW_calcN {                              % (dict_first) (name) => ~
+    dup productions exch load exch {
+        dup empty not {
+            dup FOLLOW_case1 {
+                load 2 index FOLLOW_addSet
+            } if
+        } if
+
+        3 copy FOLLOW_case2 pop
+    } forall pop pop
+} def
+
+/FOLLOW_calc {                               % (dict_first) (dict) (name) => ~
+    1 index FOLLOW_initN
+    1 index exch FOLLOW_start begin {
+        currentdict FOLLOW_size
+
+        grammar {
+            pop 2 index exch
+            FOLLOW_calcN
+        } forall
+
+        currentdict FOLLOW_size eq {
+            exit
+        } if
+    } loop end pop
+} def
+
+/FOLLOW_print {
+    {
+        (NAME: ) =
+        exch =
+        (----------------) =
+        { pop = } forall
+        (================) =
+        () =
+    } forall
+} def

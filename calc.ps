@@ -1,0 +1,13 @@
+(lib/lib.ps) run
+
+% Generate parser
+(lang_calc/tokens.ps) run
+(lang_calc/grammar.ps) run
+PARSER_generate
+
+% Lexical analysis on input file
+(lang_calc/examples/example.calc)
+LEXER_file LEXER_tokenize
+
+% Parse tokens
+exch PARSER_parse

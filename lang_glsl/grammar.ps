@@ -1,0 +1,120 @@
+% Define starting symbol
+/grammarStart /translation_unit def
+
+% Define grammar
+/grammar
+<<
+    /translation_unit [
+        [ /external_declaration /translation_unit ]
+        [ ]
+    ]
+
+    /variable_identifier [
+        [ /IDENTIFIER ]
+    ]
+
+    /assignment_operator [
+        [ /EQUAL ]
+    ]
+
+    /type_specifier_nonarray [
+        [ /VOID ]
+        [ /VEC3 ]
+    ]
+
+    /type_specifier_no_prec [
+        [ /type_specifier_nonarray ]
+    ]
+
+    /type_specifier [
+        [ /type_specifier_no_prec ]
+    ]
+
+    /fully_specified_type [
+        [ /type_specifier ]
+    ]
+
+    /expression [
+        [ /unary_expression ]
+    ]
+
+    /unary_expression [
+        [ /postfix_expression ]
+    ]
+
+    /postfix_expression [
+        [ /primary_expression /assignment_tail ]
+        [ /constructor_call ]
+    ]
+
+    /primary_expression [
+        [ /variable_identifier ]
+        [ /FLOATCONSTANT ]
+        [ /LEFT_PAREN /expression /RIGHT_PAREN ]
+    ]
+
+    /assignment_tail [
+        [ /assignment_operator /expression ]
+        [ ]
+    ]
+
+    /compound_statement_no_new_scope [
+        [ /LEFT_BRACE /statement_list /RIGHT_BRACE ]
+    ]
+
+    /statement_list [
+        [ /statement /statement_list ]
+        [ ]
+    ]
+
+    /expression_statement [
+        [ /SEMICOLON ]
+        [ /expression /SEMICOLON ]
+    ]
+
+    /statement [
+        [ /simple_statement ]
+    ]
+
+    /simple_statement [
+        [ /expression_statement ]
+    ]
+
+    /external_declaration [
+        [ /function_definition ]
+    ]
+
+    /function_prototype [
+        [ /function_declarator /RIGHT_PAREN ]
+    ]
+
+    /function_declarator [
+        [ /function_header ]
+    ]
+
+    /function_header [
+        [ /fully_specified_type /IDENTIFIER /LEFT_PAREN ]
+    ]
+
+    /function_definition [
+        [ /function_prototype /compound_statement_no_new_scope ]
+    ]
+
+    /constructor_call [
+        [ /constructor_call_header /expression_list /RIGHT_PAREN ]
+    ]
+
+    /constructor_call_header [
+        [ /type_specifier /LEFT_PAREN ]
+    ]
+
+    /expression_list [
+        [ /postfix_expression /expression_list_b ]
+        [ ]
+    ]
+
+	  /expression_list_b [
+        [ /COMMA /expression_list ]
+        [ ]
+    ]
+>> def

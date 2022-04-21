@@ -1,0 +1,79 @@
+/TABLE_llcheck {          % (t)
+    currentdict exch known {
+        (ERROR: ) =
+        (Grammar is not LL(1)) =
+		(CONFLICT: ) =
+		2 copy == ==
+		(EXISTING: ) =
+		dup ==
+		currentdict exch get ==
+        quit
+    } if
+} def
+
+/TABLE_rule1 {            % (a) (first(a)) (t) => ~
+    tuck known {
+        dup TABLE_llcheck
+        exch def
+    }{
+        pop pop
+    } ifelse
+} def
+
+/TABLE_rule2 {            % (follow) (N) (a) (first(a)) (t) => ~
+    exch /EPSILON known { % EPSILON in first(a), (follow) (N) (a) (t)
+        TABLE_rule3
+    }{
+        pop pop pop pop
+    } ifelse
+} def
+
+/TABLE_rule3 {            % (follow) (N) (a) (t) => ~
+    4 -2 roll get         % follow(N), (a) (t) (follow(N))
+    over known {          % t in follow(N), (a) (t)
+        dup TABLE_llcheck
+        exch def          % add t to M[N][t]
+    }{
+        pop pop
+    } ifelse
+} def
+
+/TABLE_calc {             % (first) (follow) => (table)
+    << >> dup 4 1 roll
+    begin grammar {
+        TABLE_calc_N
+    } forall end pop pop
+} def
+
+/TABLE_calc_N {           % (first) (follow) (N) (array) => (first) (follow)
+    over << >> def
+    over load begin {
+        dup 4 index exch
+        FIRST_production
+
+        TABLE_calc_a
+    } forall end pop
+} def
+
+/TABLE_calc_a {           % (follow) (N) (a) (first(a)) =>
+    tokens {              % (follow) (N)
+        pop 3 copy
+        TABLE_rule1
+        5 copy
+        TABLE_rule2 pop
+    } forall pop pop
+} def
+
+/TABLE_print {            % (table) => ~
+    {
+        (NONTERMINAL: ) =
+        exch =
+        (----------------) =
+        {
+            exch = ==
+            (--------) =
+        } forall
+        (================) =
+        () =
+    } forall
+} def

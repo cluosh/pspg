@@ -1,0 +1,108 @@
+(lib/parser/lexer.ps) run
+(lib/parser/tree.ps) run
+
+/productions {               % (name) => (array)
+    grammar exch 2 copy
+    known {
+        get
+    }{
+        pop pop []
+    } ifelse
+} def
+
+/PARSER_generate {           % ~ => (table)
+    << >> << >>
+    over
+    FIRST_calc
+    2 copy grammarStart
+    FOLLOW_calc
+    TABLE_calc
+} def
+
+/PARSER_is_done {            % (symbol) => (flag)
+    /$ eq {
+        sym stream length ge {
+            true
+        }{
+            (ERROR: Parsing done, but token stream not done) =
+            stop
+        } ifelse
+    }{
+        false
+    } ifelse
+} def
+
+/PARSER_is_terminal {        % (name) => (flag)
+    tokens exch known
+} def
+
+/PARSER_locals {             % (tokens) (table) => (dict)
+    << >>
+    dup /sym 0 put
+    dup /table 4 -1 roll put
+    dup /stream 4 -1 roll put
+    dup /tree [] put
+} def
+
+/PARSER_reverse {            % (array) => (a_n) (a_n-1) ...
+    dup length dec -1 0 {
+        over exch get exch
+    } for pop
+} def
+
+/PARSER_token {              % ~ => (token)
+	sym stream length lt {   % Current token in input stream
+		stream sym get
+	}{
+		[ /EPSILON ]
+	} ifelse
+} def
+
+/PARSER_next {               % ~ => ~
+    /sym sym inc def
+} def
+
+/PARSER_terminal {
+    PARSER_token
+    TREE_terminal
+
+    0 get eq {
+        PARSER_next
+    }{
+        (Unexpected token) =
+        stop
+    } ifelse
+} def
+
+/PARSER_nonterminal {
+    TREE_nonterminal
+
+    table exch get
+    PARSER_token
+    tuck 0 get 2 copy known {
+        3 -1 roll pop
+        get PARSER_reverse
+    }{
+        pop pop pop
+    } ifelse
+} def
+
+/PARSER_parse {              % (tokens) (table) => (tree)
+    PARSER_locals begin
+    /$ grammarStart {
+        TREE_update
+
+        dup PARSER_is_done {
+            pop exit
+        } if
+
+        dup PARSER_is_terminal {
+            PARSER_terminal
+        }{
+            PARSER_nonterminal
+        } ifelse
+    } loop
+
+    tree
+    end
+} def

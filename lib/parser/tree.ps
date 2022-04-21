@@ -1,0 +1,96 @@
+/TREE_push {                 % (array) (object) => (array)
+    << >> begin
+    exch dup length inc
+    /len exch def
+    { exch } forall
+    len array astore
+    end
+} def
+
+/TREE_pop {                  % (array) => (array) (object)
+    << >> begin
+    dup length
+    /len exch def
+    { } forall
+    len 1 roll
+    len dec array astore
+    exch
+    end
+} def
+
+/TREE_node {                 % (array) (name) => (array)
+    1 array astore
+    TREE_push
+} def
+
+/TREE_append {               % (array) (obj) => (array)
+    exch TREE_pop 3 -1 roll
+    TREE_push TREE_push
+} def
+
+/TREE_mne {                  % (array) => (array)
+	dup length 1 eq {
+		dup 0 get
+		PARSER_is_terminal
+        not {
+			pop []
+		} if
+	} if
+} def
+
+/TREE_merge {                % (array) => (array)
+	dup length exch
+	TREE_pop TREE_mne
+    dup length 0 eq {
+        pop exch pop
+    }{
+        3 -1 roll 1 eq {
+            exch pop
+        }{
+            TREE_append
+        } ifelse
+    } ifelse
+} def
+
+/TREE_update {               % parser stack => parser stack
+    {
+        dup /WEDGE eq {
+            pop tree
+            TREE_merge
+            TREE_set
+        }{
+            exit
+        } ifelse
+    } loop
+} def
+
+/TREE_set {                  % (array) => ~
+    /tree exch def
+} def
+
+/TREE_terminal {             % (token) => (token)
+    tree over
+    TREE_append TREE_set
+} def
+
+/TREE_nonterminal {          % (N) => (N)
+    dup tree exch
+    TREE_node TREE_set
+    /WEDGE exch
+} def
+
+/TREE_print_rec {            % (tree) (depth) => ~
+    exch dup
+    type /arraytype eq {
+        {
+            over 2 add
+			TREE_print_rec
+        } forall pop
+    }{
+        exch print_pad
+    } ifelse
+} def
+
+/TREE_print {                % (tree) => ~
+    0 TREE_print_rec
+} def

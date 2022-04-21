@@ -1,0 +1,36 @@
+/tokens
+<<
+    /LEFT_PAREN    {}
+    /RIGHT_PAREN   {}
+    /NUMBER        {}
+    /ADD           {}
+    /SUB           {}
+    /MUL           {}
+    /DIV           {}
+>> def
+
+/separators
+<<
+    (+) ord      { (+) LEXER_fix }
+    (-) ord      { (-) LEXER_fix }
+    (*) ord      { (*) LEXER_fix }
+    (\/) ord     { (_DIV_) LEXER_fix }
+    (\() ord     { (_LP_) LEXER_fix }
+    (\)) ord     { (_RP_) LEXER_fix }
+>> def
+
+/keywords
+<<
+    /_LP_        { [ /LEFT_PAREN ] }
+    /_RP_        { [ /RIGHT_PAREN ] }
+    /+           { [ /ADD ] }
+    /-           { [ /SUB ] }
+    /*           { [ /MUL ] }
+    /_DIV_       { [ /DIV ] }
+>> def
+
+/litAndIdents
+<<
+    /realtype    { cvr /NUMBER }
+    /integertype { cvi /NUMBER }
+>> def

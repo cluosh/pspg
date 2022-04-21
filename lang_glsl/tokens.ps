@@ -1,0 +1,46 @@
+/tokens
+<<
+    /VOID          {}
+    /LEFT_PAREN    {}
+    /RIGHT_PAREN   {}
+    /LEFT_BRACE    {}
+    /RIGHT_BRACE   {}
+    /COMMA         {}
+    /EQUAL         {}
+    /SEMICOLON     {}
+    /VEC3          {}
+    /IDENTIFIER    {}
+    /FLOATCONSTANT {}
+    /INTCONSTANT   {}
+>> def
+
+/separators
+<<
+    (,) ord      { (,) LEXER_fix }
+    (\() ord     { (_LP_) LEXER_fix }
+    (\)) ord     { (_RP_) LEXER_fix }
+    (\{) ord     { (_LB_) LEXER_fix }
+    (\}) ord     { (_RB_) LEXER_fix }
+    (;) ord      { (;) LEXER_fix }
+    (=) ord      { (=) LEXER_fix }
+>> def
+
+/keywords
+<<
+    /void        { [ /VOID ] }
+    /_LP_        { [ /LEFT_PAREN ] }
+    /_RP_        { [ /RIGHT_PAREN ] }
+    /_LB_        { [ /LEFT_BRACE ] }
+    /_RB_        { [ /RIGHT_BRACE ] }
+    /,           { [ /COMMA ] }
+    /=           { [ /EQUAL ] }
+    /;           { [ /SEMICOLON ] }
+    /vec3        { [ /VEC3 ] }
+>> def
+
+/litAndIdents
+<<
+    /nametype    { dup length string cvs /IDENTIFIER }
+    /realtype    { cvr /FLOATCONSTANT }
+    /integertype { cvi /INTCONSTANT }
+>> def

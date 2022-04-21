@@ -1,0 +1,31 @@
+% Define starting symbol
+/grammarStart /expr def
+
+% Define grammar
+/grammar
+<<
+    /expr [
+        [ /term /expr_1 ]
+    ]
+    
+    /expr_1 [
+        [ /ADD /term /expr_1 ]
+        [ /SUB /term /expr_1 ]
+        [ ]
+    ]
+    
+    /term [
+        [ /factor /term_1 ]
+    ]
+    
+    /term_1 [
+        [ /MUL /factor /term_1 ]
+        [ /DIV /factor /term_1 ]
+        [ ]
+    ]
+    
+    /factor [
+        [ /LEFT_PAREN /expr /RIGHT_PAREN ]
+        [ /NUMBER ]
+    ]
+>> def

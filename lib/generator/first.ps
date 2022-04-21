@@ -1,0 +1,67 @@
+/FIRST_hasEpsilon {                          % (name) => (flag)
+    load /EPSILON known                      % Check whether epsilon is
+} def                                        % contained in FIRST
+
+/FIRST_addSet {                              % (dict) (name) => ~
+    load {                                   % Add all elements from first set
+        2 index 3 1 roll put                 % to given dictionary
+    } forall pop
+} def
+
+/FIRST_calcN {                               % (name) => (dict)
+    dup productions exch load exch {
+        dup empty {
+            pop dup /EPSILON {} put
+        }{
+            dup 0 get 2 index exch           % s_1
+            FIRST_addSet
+
+            1 1 2 index length 2 sub {       % s_2 .. s_k
+                dup 2 index exch get
+                FIRST_hasEpsilon not {       % s_i
+                    pop exit
+                } if
+
+                1 add 1 index exch get       % s_i+1
+                2 index exch
+                FIRST_addSet
+            } for pop
+        } ifelse
+    } forall
+} def
+
+/FIRST_initT {                               % (dict) => (dict)
+    dup begin tokens {                       % Create FIRST for terminals
+        pop dup << >>
+        dup begin
+        3 -1 roll {} def
+        end def
+    } forall end
+} def
+
+/FIRST_initN {                               % (dict) => (dict)
+    dup begin grammar {                      % Create FIRST for nonterminals
+        pop << >> def
+    } forall end
+} def
+
+/FIRST_calc {                                % (dict) => ~
+    FIRST_initT FIRST_initN begin {
+        true grammar {
+            pop dup load length exch
+            FIRST_calcN
+            length eq and
+        } forall
+
+        { exit } if
+    } loop end
+} def
+
+/FIRST_production {                          % (dict_first) (array) => (dict)
+    exch begin <<>> exch {
+        2 copy FIRST_addSet
+        dup FIRST_hasEpsilon not {
+            pop exit
+        } if pop
+    } forall end
+} def

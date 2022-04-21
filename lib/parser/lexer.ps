@@ -1,0 +1,53 @@
+/LEXER_fix {                  % (num) (string) => (char_0) ... (char_j) (num + j)
+    ( ) ord exch
+    dup length inc exch
+    { exch } forall
+    ( ) ord exch inc
+    dup 2 add -1 roll
+    add
+} def
+
+/LEXER_separate {             % (num) (char) => (char_0) ... (char_j) (num + j)
+    dup separators
+    exch known {
+        separators exch get
+        exec
+    }{
+        exch inc
+    } ifelse
+} def
+
+/LEXER_file {                 % (filename) => (string)
+    (r) file
+    0 {                       % Keep number of characters on top of stack
+        dup inc index         % Get file handle from bottom
+        read not { exit } if
+        LEXER_separate
+    } bind loop
+    str exch closefile
+} def
+
+/LEXER_tokenize {             % (string) => (string_0) ... (string_n)
+    0 {                       % Keep token counter on top of stack
+        exch token not {
+            exit
+        } if
+
+        dup keywords
+        exch known {          % Keywords
+            keywords exch
+            get exec
+        }{                    % Literals and identifier
+            dup type
+            litAndIdents exch 
+            get exec
+            exch 2
+            array astore
+        } ifelse
+
+        3 1 roll
+        exch inc
+    } loop
+    
+    array astore
+} def

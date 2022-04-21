@@ -1,0 +1,13 @@
+(lib/lib.ps) run
+
+% Generate parser
+(lang_glsl/tokens.ps) run
+(lang_glsl/grammar.ps) run
+PARSER_generate
+
+% Lexical analysis on input file
+(lang_glsl/examples/example.frag)
+LEXER_file LEXER_tokenize
+
+% Parse tokens
+exch PARSER_parse

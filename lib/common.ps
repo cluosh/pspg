@@ -1,0 +1,71 @@
+/ord {                       % (string) => (num), First character of string
+    0 get
+} def
+
+/inc {                       % (num) => (num + 1)
+    1 add
+} def
+
+/dec {                       % (num) => (num - 1)
+    1 sub
+} def
+
+/over {                      % (obj1) (obj2) => (obj1) (obj2) (obj1)
+    1 index
+} def
+
+/tuck {                      % (obj1) (obj2) => (obj2) (obj1) (obj2)
+    exch over
+} def
+
+/str {                       % (char1) ... (charn) (n) => (string)
+    dup string               % Create string
+    exch dec                 % Adjust character count for loop
+    -1 0 {
+        2 copy
+        5 -1 roll
+        put pop
+    } for
+} def
+
+/fill_str {                  % (char) (n) => (string)
+    << >> begin
+    /n exch def
+    /c exch def
+    n string
+    0 1 n dec {
+        over exch
+        c put
+    } for
+    end
+} def
+
+/concat {                   % (string) (string) => (string)
+	over length
+	over length
+	add string
+	exch over exch
+	3 index length exch
+	putinterval
+	dup 3 -1 roll
+	0 exch putinterval
+} def
+
+/pad_space {                % (string) (count) => (string)
+	32 exch fill_str
+	exch concat
+} def
+
+/print_pad {                % (obj) (count) => ~
+	exch 200 string cvs
+	exch pad_space
+	=
+} def
+
+/empty {                    % (array) => (flag)
+    length 0 eq
+} def
+
+/cvnts {                    % (name) => (string)
+    dup length string cvs
+} def
