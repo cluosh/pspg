@@ -14,6 +14,8 @@ distant fever dream and I have no idea how any of this works anymore. I'm not
 sure if I can morally claim ownership of this code, as I'm pretty sure I was 
 an entirely different person when I wrote this code.
 
+![I do not know who I am... I don't know why I'm here, All I know is that I must parse](parse.jpg)
+
 Introduction
 ---
 
